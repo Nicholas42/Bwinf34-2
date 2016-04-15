@@ -1,0 +1,151 @@
+yamyams0.txt:
+############
+#U#SSSSSS#U#
+#   ##     #
+#   #SSSE#U#
+#       ##U#
+#U       UU#
+#U#E SSSE###
+############
+
+Die Ausgabe wurde nach yamyams0.out geschrieben.
+Das Bild wurde nach yamyams0.png geschrieben.
+
+yamyams1.txt:
+########################
+#UUUU#UU U#UUUU#UUUUUUU#
+#UUUU#UU U#UUUU#UUUUUUU#
+#UUUUUUU U#UUUUUUUUEUU##
+#UUUUUUU UUUUUUUUUUUUUU#
+#UUUUUUU UUUUUU#UUUUUUU#
+#UUUU##  ##UUUU#UUUUUUU#
+#UUUU#UU U#UUUU#UUU#UUU#
+#UUUU#UUEU#UUUU#UUUUUUU#
+#   E######UUUU#UUUUUUU#
+#UUUU#UUUU#UUUU#UUUUUUU#
+#UUUU#UUUU#UUUU#UUUUUUU#
+########################
+
+Die Ausgabe wurde nach yamyams1.out geschrieben.
+Das Bild wurde nach yamyams1.png geschrieben.
+
+yamyams2.txt:
+###################################################
+# #UUU#               #         #UUU#             #
+# ###U# ########### # # ##### # ###U# ### ####### #
+#   #U#     #UUU#   # #   #U# #   #U#   # #       #
+### #U##### #U#U# ### ### #U# ### #U### # ####### #
+#E# #UUUUUU UU#U# # # #UU UU# #U# #     #       # #
+#S# ###U######### # # #####U# #U# #U########### # #
+#S#   #U#U#     # # #     #U# #U# #UUUUUUU#   # # #
+#S### #U#U# ### # # ##### ### #U# #####U### # # # #
+#SSS# #UUU#   # # #     #   # #U#     #U#   #   # #
+###S# ###U### # # # ####### # #U##### ### ####### #
+#   #   #U#   #   #   #     # #UUUUU#   # #       #
+# #S### ### ####### # # ##### #U#U##### # # #######
+# #SSS#   #       # #   #     #U#U#UUU#   # #ES SS#
+# ####### ### ### # ##### # ###U###U#U##### ### ###
+# #     #   #   # #     # # #UUUUUUU#UUUUU#   #   #
+# # ### ### ##### ##### # # #U#######U###U### ### #
+# #   #   # #   #   #   #E# #UUU#UUU#U#U#UUU#     #
+# ### # ### # # # # # ##### ###U#U###U#U###U##### #
+#     #     # # # # # #     #UUU#U#UUU#UUUUU#     #
+# ########### # ### # # #####U###U#U######### #####
+# #           #   # #   #UUU#UUUUU#UUUUU#UUU#   #U#
+# ##### ######### # #####U#U#####U#####U#U#U### #U#
+#       #           #UUUUU#UUUUUUUUUUU#UUU#UUUU UU#
+###################################################
+
+Die Ausgabe wurde nach yamyams2.out geschrieben.
+Das Bild wurde nach yamyams2.png geschrieben.
+
+yamyams3.txt:
+###################
+#UUUU#UUUUUUUUUUUU#
+##UUUUUUUUUUUUUUUU#
+#UUUUUUUUU#UUUUUUU#
+#UUUUUUUUUUUUUUUU##
+#UUUUUUUUUU###UUUU#
+#UUUU#UUUUUUUUUUUU#
+#UUUUUUUUUUUUUUUUU#
+#UUUUUUUUUUUUUUUUU#
+#UUUUUU#UUUUUUUUEU#
+##UUUUU#UUUUUUUUUU#
+#UUU####UUUU#UUUUU#
+#UUU#UUUUUUUUUUUUU#
+#UUU#UUUUUUUUUUUUU#
+###################
+
+Die Ausgabe wurde nach yamyams3.out geschrieben.
+Das Bild wurde nach yamyams3.png geschrieben.
+
+yamyams4.txt:
+###################
+#UUUU#UUUUUU#UUUUU#
+##UUU#UUUUUUUUUUUU#
+#UUUUUUUUU##UUUUUU#
+#UUUU#UUUUUUUUUUUU#
+#UUUU#UUUUU###UUUU#
+#UUEU#####UUUUUUUU#
+#UUUUUU#UUUUUUUUUU#
+#UUUUUU#UUUUUUUUUU#
+#UUUUUU#####UUUUUU#
+##UUUUU#UUUUUUUUUU#
+#UUU####UUUU#######
+#UUU#UUUUUUUUUUUUU#
+#UUU#UUUU#UUUUUUUU#
+###################
+
+Die Ausgabe wurde nach yamyams4.out geschrieben.
+Das Bild wurde nach yamyams4.png geschrieben.
+
+yamyams5.txt:
+########################
+#              #UUUU UU#
+#              #U###   #
+#              ###U  UU#
+#      ### ##          #
+#    ###    #          #
+#    #    # #    #U  UU#
+#    #  ### #    #U  UU#
+#### #      #   ###    #
+#E       ####    #     #
+####  #        # #  #UU#
+#     #     ###E    #UU#
+#     #      #    ###UU#
+#     ###    #         #
+#   E           ###    #
+#           ##    #    #
+#####   #    #    #    #
+#UUU#   ##   #         #
+#UUU#      #    #      #
+#UUU# #### ###  #      #
+#UUUU UUU#      ###    #
+#UUUU UUUU     EUUU  UU#
+#UUUU UUUU      UUU  UU#
+########################
+
+Die Ausgabe wurde nach yamyams5.out geschrieben.
+Das Bild wurde nach yamyams5.png geschrieben.
+
+yamyams6.txt:
+######
+#E##S#
+#SSSS#
+##SSS#
+#SS#S#
+#S#SS#
+#SSSS#
+##SSS#
+#SS#S#
+#S#SS#
+#SSSS#
+##SSS#
+#SS#S#
+#S#SS#
+#SSSS#
+######
+
+Die Ausgabe wurde nach yamyams6.out geschrieben.
+Das Bild wurde nach yamyams6.png geschrieben.
+

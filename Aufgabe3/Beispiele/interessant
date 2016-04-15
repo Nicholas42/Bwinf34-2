@@ -1,0 +1,110 @@
+yamyams0.txt, riechen;
+############
+#U#SSSSSS#U#
+#  S##  S  #
+#  S#SSSE#U#
+#  S    ##U#
+#U S    SUU#
+#U#ESSSSE###
+############
+
+Die Ausgabe wurde nach yamyams0,riechen.out geschrieben.
+Das Bild wurde nach yamyams0,riechen.png geschrieben.
+
+yamyams1.txt, fallen;
+########################
+#SSSS#    #UUUU#SSSSSSS#
+#SSSS#    #UUUU#SSSSSSS#
+#         #        ESS##
+#SSSS           SSSSSSS#
+#              #SSSSSSS#
+#SSSS##  ##UUUU#SSSSSSS#
+#SSSS#S  S#UUUU#SSS#SSS#
+#SSSS#S ES#UUUU#SSSSSSS#
+#SSSE######UUUU#SSSSSSS#
+#SSSS#UUUU#UUUU#SSSSSSS#
+#SSSS#UUUU#UUUU#SSSSSSS#
+########################
+
+Die Ausgabe wurde nach yamyams1,fallen.out geschrieben.
+Das Bild wurde nach yamyams1,fallen.png geschrieben.
+
+yamyams2.txt, max13;
+###################################################
+#W#UUU#WWWWWWWWWWWWWWW#UUUUUU UU#UUU#             #
+#W###U#W###########W#W#U##### #U###U# ### ####### #
+#WWW#U#WWWWW#UUU#WWW#W#UUU#U# #UUW#U#   # #       #
+###W#U#####W#U#U#W###W###U#U# ###W#U###W# ####### #
+#E#W#UUUUUUWUU#U#W# #W#UUUUU# #U#W#WWWWW#       # #
+#S#W###U#########W# #W#####U# #U#W#U###########W# #
+#S#WWW#U#U#UUUUU#W# #WWWWW#U# #U#W#UUUUUUU#WWW#W# #
+#S###W#U#U#U###U#W# #####W### #U#W#####U###W#W#W# #
+#SSS#W#UUU#UUU#U#W#     #WWW# #U#WWWWW#U#WWW#WWW# #
+###S#W###U###U#U#W# #######W# #U#####W###W####### #
+#   #WWW#U#UUU#WWW#   #WWWWW# #UUUUU#WWW#W#       #
+# #S###W###U####### #S#W##### #U#U#####W#W# #######
+# #SSS#WWW#UUUUUUU# # WW#     #U#U#UUU#WWW# #ES SS#
+# #######W###U###U# ##### # ###U###U#U##### ### ###
+# #     #WW #UUU#U#     # # #UUUUUUU#UUUUU#   #   #
+# # ### ### #####U##### # # #U#######U###U### ### #
+# #   #   # #UUU#UUU#   #E# #UUU#UUU#U#U#UUU#     #
+# ### # ### #U#U#U#U# ##### ###U#U###U#U###U##### #
+#     #     #U#U#U#U# #     #UUU#U#UUU#UUUUU#     #
+# ###########U#U###U# # #####U###U#U######### #####
+# #UUUU UUUUUU#UUU#U#   #UUU#UUUUU#UUUUU#UUU#   #U#
+# ##### #########U#U#####U#U#####U#####U#U#U### #U#
+#       #UUUUUUUUUUU#UUUUU#UUUUUUUUUUU#UUU#UUUU UU#
+###################################################
+
+Die Ausgabe wurde nach yamyams2,max13.out geschrieben.
+Das Bild wurde nach yamyams2,max13.png geschrieben.
+
+yamyams4.txt, fallen, riechen;
+###################
+#  S #UUUUUU#UUUUU#
+## S #UUUUUUUUUUUU#
+#  S      ##UUUUUU#
+#  S #UUUUUUUUUUUU#
+#  S #UUUUU###UUUU#
+#SSES#####UUUUUUUU#
+#  S   #UUUUUUUUUU#
+#  S   #UUUUUUUUUU#
+#  S   #####UUUUUU#
+## S   #UUUUUUUUUU#
+#S S####UUUU#######
+#S S#UUUUUUUUUUUUU#
+#S S#UUUU#UUUUUUUU#
+###################
+
+Die Ausgabe wurde nach yamyams4,fallen,riechen.out geschrieben.
+Das Bild wurde nach yamyams4,fallen,riechen.png geschrieben.
+
+yamyams5.txt, fallen;
+########################
+#SSSSSSSSSSSSSS#UUUU UU#
+#SSSSSSSSSSSSSS#U###   #
+#SSSSSSSSSSSSSS###U  UU#
+#SSSSSS###S##          #
+#SSSS###SSSS#          #
+#SSSS#SSSS#S#    #U  UU#
+#SSSS#SS###S#    #U  UU#
+####S#SSSSSS#   ###    #
+#ESSS SSS####    #     #
+####  #SSS  SSS# #  #UU#
+#     #     ###E    #UU#
+#     #SSS  S#    ###UU#
+#     ###S  S#         #
+#   E    S  SS S###    #
+#           ##    #    #
+#####   #S  S#    #    #
+#UUU#   ##   #         #
+#UUU#      #SS S#      #
+#UUU# #### ###  #      #
+#UUUU UUU#      ###    #
+#              E       #
+#UUUU UUU            UU#
+########################
+
+Die Ausgabe wurde nach yamyams5,fallen.out geschrieben.
+Das Bild wurde nach yamyams5,fallen.png geschrieben.
+
