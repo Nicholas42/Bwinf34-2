@@ -1,0 +1,195 @@
+\documentclass[12pt]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\rhead{\thepage}
+\chead{Teilnahme-ID: 4748}
+\lhead{Nicholas Schwab}
+\cfoot{}
+\setlength{\headheight}{15.2pt}
+\pagestyle{fancy}
+\renewcommand{\theFancyVerbLine}{  \sffamily\textcolor[rgb]{0.5,0.5,0.5}{\scriptsize\arabic{FancyVerbLine}}}
+\newcommand{\bigo}{\mathcal{O}}
+
+\lstset{literate=
+  {ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1 {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1 {ß}{{\ss}}1, 
+  breaklines=true,
+breakatwhitespace=true,
+breakautoindent=true,
+}
+
+\title{BWINF 34 1. Runde}
+\author{Nicholas Schwab}
+
+\begin{document}
+\tableofcontents
+\newpage
+%\section{Aufgabe 2}
+\section{Lösungsidee}
+\subsection{Genereller Ansatz}
+Zuerst werden einige Funktionen eingeführt, die im Folgenden die Ausdrucksweise vereinfachen sollen. Die Funktion $z$ ordnet jedem Paket $P$ sein Zielhaus zu. Die Funktion $d_M$ bezeichnet die Manhattan-Distanz \cite{2} zwischen zwei Häusern, es ist also $d_M((x,y), (x',y')) = |x-x'| + |y-y'|$. Der Wert eines Hauses an Stelle $(x,y)$ in einem $n\times n$-Quadrat ist wie folgt definiert:
+\begin{align*}
+ \omega: (x,y) \mapsto \begin{cases}
+			  x\cdot n +y, &\mbox{für} ~ x \equiv 0 \mod 2 \\
+			  x\cdot n + n -y -1, &\mbox{für}~ x \not\equiv 0 \mod 2
+                       \end{cases}
+\end{align*}
+Man kann sich leicht davon überzeugen, dass diese Funktion bijektiv auf die Zielmenge $\{0, 1, \dots, n^2-1\}$ ist. So ergibt sich die Wert-Distanz $d$ zweier Häuser $H$ und $G$ als $d(H,G) = |\omega(H)-\omega(G)|$. Der Wert eines Paketes ist der Wert seiner aktuellen Position. Somit ergibt sich eine Bewertung $\phi$ eines Feldes, das aus einer $n\times n$ Matrix $M$ mit nullbasierten Indices, die mit Paketen gefüllt ist, besteht, als ein Paar nicht-negativer, ganzer Zahlen. Dabei ist die erste Zahl das Maximum der Wert-Distanzen aller Pakete zur ihren Zielhäusern und die zweite Zahl die Anzahl, wie oft diese Maximum angenommen wird. Ein Feld, in dem alle Pakete richtig verteilt sind, hat offensichtlich die Bewertung $(0, n^2)$. \\
+
+In einem Feld kann sich ein Paket $P$ in einem Umsortierungsschritt maximal um eine Position in entweder $x-$ oder $y-$Richtung bewegen. Daher benötigt es mindestens $d_M(P, z(P))$ viele Umsortierungsschritte um zu seinem Ziel zu gelangen. Ein ganzes Feld benötigt folglich mindestens soviele Umsortierungsschritte wie die größte Manhattan-Distanz zwischen einem seiner Pakete und dessen Ziel. Jedoch ist diese Distanz kein Minimum für die Anzahl der Schritte sondern nur eine untere Schranke, so lässt sich bei folgender Ausgangssituation keine Lösung in 2 Schritten finden, da jedes der Pakete auf seinem kürzesten Weg durch die Mitte muss, was nicht alle gleichzeitig können.
+\begin{figure}[h]
+\centering
+ \includegraphics[width = 5cm]{untereSchranke.png}
+ \caption{Ein Feld, das mehr als $\max(d_M(P,z(P)))$ Schritte benötigt.}
+\end{figure}
+
+
+Wenn man sich die Werte aller Häuser in einem $n\times n$ ansieht ergibt sich folgende Situation (am Beispiel eines $6\times6$-Quadrates):\\
+\begin{figure}[h]
+\centering
+\includegraphics[width = 5cm]{werte.png}
+\caption{Die Werte von eines $6\times6$-Quadrates.}
+\end{figure}
+Das ist auch der Zielzustand, den man mit den Werten der Pakete erreichen will. Diese schlangenartige Sortierung ließe sich mit dem Shearsort-Algorithmus\cite{3} leicht erreichen, jedoch liefert dieser keine besonders guten Ergebnisse (in ersten Tests erreichte konnte er Amacity in 56 Zügen sortieren). Die anderen in der Quelle erwähnten Algorithmen erschienen mir jedoch sehr schwer und können vorallem bei $2^n\times 2^n$ Matrizen ihre Vorteile entfalten. Zumal sind sie darauf optimiert die Matrix möglichst schnell zu sortieren, was nicht unbedingt gleichbedeutend damit ist, sie in möglichst wenig Schritten zu sortieren, wie es in der Aufgabe gefordert wird. So kann man sich, da der Plan vor der Umverteilung berechnet wird, erlauben, das Feld zwischen oder während der Berechnung der Umverteilungsschritte ausgiebig zu evaluieren, was bei einer möglichst schnellen Echtzeitsortierung verheerend wäre. Auch wird bei diesen Algorithmen davon ausgegangen, dass jede Position nur Informationen über sein eigenes Paket und über die seiner unmittelbaren Nachbarn hat, was wieder nicht der Fall ist.\\
+
+Darum habe ich mich dazu entschieden, statt einen anderen Algorithmus zu benutzen, den Shearsort-Algorithmus zu verbessern. Beim Shearsort-Algorithmus kommt es zu sehr starren Abläufen der verschiedenen Teilalgorithmen, folglich kann es passieren, dass es womöglich besser wäre einen anderen Teilalgorithmus auszuführen, als den, der gerade an der Reihe ist, vorallem ist es interessant, möglichst viele Umverteilungen gleichzeitig durchzuführen und den maximalen Abstand der Pakete zu ihren Zielen zu erniedrigen, da dies die Mindestanzahl an noch zu tuenden Schritten ist. Auch werden bei Shearsort die Reihen einzeln sortiert, wodurch an den Enden vielleicht Schritte verschwendet werden, weil z.B. der Anfang der Reihe beim Odd-Durchgang nicht verändert wird. Dabei lässt einfach sich auf die gesamte Schlange Odd-Even-Sort anwenden, was nur höchstens die beiden Positionen an den Enden der gesamten Schlange unbenutzt lässt anstatt zwei Positionen pro Reihe. \\
+
+Daher habe ich mich für eine etwas freiere Abfolge der Teilalgorithmen entschieden. Hierbei werden als Teilalgorithmen jeweils Odd- und Even-Durchgangs des Odd-Even-Sorts über die gesamte Schlange sowie eine einzelne Anwendung der horizontalen Sortierung gezählt. Die Abfolge dieser Teilalgorithmen wird über das Ergebnis bewertet, dass sie erzielen. Dazu sortiert jeder der Algorithmen eine Kopie des aktuellen Feldes und dann der Algorithmus, dessen Ergebnis am besten bezüglich der Bewertung $\phi$ ist, wird dann wirklich auf das Feld angewandt. Dabei erfolgt die Sortierung der Bewertungen lexikographisch, da es vorallem wichtig ist, die maximalen Distanzen zu minimieren, da diese die minimale Anzahl an noch zu gehenden Schritten bei reiner Odd-Even-Sortierung angeben.\\
+
+Durch diese Ungleichbehandlung von Reihen und Spalten kann es die Lösung stark beeinflussen, ob das Quadrat so sortiert wird, wie es gegeben ist, oder ob die an der Nordwest-Südost-Diagonalen gespiegelte Version sortiert wird. Bei der gespiegelten Version sind die Reihen des Originals die Spalten und umgekehrt. Dadurch ändert sich die Anwendung der Algorithmen grundlegend und damit auch deren Ergebnisse. Allerdings sind beide Sortierungen auf dem Original anwendbar, man muss einfach nur jegliche Sortierung der gespiegelten Version wieder zurückspiegeln. Da man nicht sagen kann, welche Version die besseren Ergebnisse liefert, werden beide sortiert und die kürzere Version zurückgegeben. 
+
+\subsection{Algorithmen}
+\subsubsection{Odd-Even-Sort}
+Der gewöhnliche Odd-Even-Sortieralgorithmus besteht aus abwechselnden Odd- und Even-Durchgängen. Diese funktionieren folgendermaßen:
+ \begin{algorithmic}
+\Procedure{Odd}{Feld}
+    \ForAll{ungerade Positionen im Feld}
+	\If {$\omega(Position.Paket.Ziel) > \omega(Position.next.Paket.Ziel)$}
+		\State {Tausche Pakete von Position und Position.next}
+	\EndIf
+    \EndFor 
+\State \Return{Feld}
+\EndProcedure
+\end{algorithmic}
+Der Even-Durchgang macht das gleiche mit den geraden Positionen, d.h. mit den Positionen mit geradem Index. Nach höchstens $n$ kombinierten Odd-Even-Durchgängen ist eine Liste der Länge $n$ sortiert.\cite{1}  Diese Odd- und Even-Durchgänge werden in meinem Algorithmus zum Einen direkt aufs Feld angewandt, zum Anderen in der Spaltensortierung benutzt.
+
+\subsubsection{Spaltensortierung}
+Die Spaltensortierung ist eine Anwendung von Odd-Even-Sort auf die Spalten der Matrix. Dabei wird auf jede Spalte nur einer der beiden Durchläufe angewandt, damit die Sortierung vergleichbar mit den einzelnen Odd- und Even-Durchläufen bleibt. Deswegen wird auch wieder der jeweils bessere der beiden Durchläufe angewandt:
+\begin{algorithmic}
+ \Procedure{Spaltensortierung}{Feld}
+	\ForAll{Spalten in Feld}
+		\State odd = \Call{Odd}{Spalte}
+		\State even = \Call{Even}{Spalte}
+		\If {$\phi(odd) < \phi(even)$}
+			\State Spalte = odd
+		\Else
+			\State Spalte = even
+		\EndIf
+	\EndFor 
+	\State \Return Feld
+ \EndProcedure
+\end{algorithmic}
+
+\subsubsection{Quadratsortierung}
+Bei einigen Beispielen ist mir aufgefallen, dass, vorallem zu Ende der Sortierung, oft ein Rundtausch in einem $2\times2$-Quadrat, d.h. von jedem Haus wird das Paket an das nächste Haus im/entgegen dem Uhrzeigersinn weitergegeben, die beste Lösung wäre und manchmal die Pakete sofort ans Ziel bringt. Jedoch lässt sich so ein Rundtausch durch die Paartausche, also Tausche bei denen zwei Häuser ihre Pakete direkt austauschen, wie sie bei den bisherigen Sortieralgorithmen ausschließlich vorkommen, nur sehr schlecht emulieren. Daher wird die Quadratsortierung eingeführt. Diese ist anstatt einer zusätzlichen Sortierung eine Aufbesserung der letzten Sortierung. Dazu werden alle $2\times2$ Subquadrate durchgegangen. Wenn alle Tausche der 4 Häuser, die das Quadrat bilden, innerhalb dieses Quadrates waren, kann man den Log dieser 4 Häuser manipulieren, ohne dass es einen Einfluss auf die Häuser außerhalb diese Quadrats hat. Wenn die Pakete nach der letzten Optimierung nicht optimal platziert waren, kann man sie folglich umsortieren und den Log entsprechend manipulieren ohne Inkonsistenzen zu erzeugen. Diese Methode ist sehr laufzeitintensiv, wie ich später noch aufzeigen werde. Daher hat die Nutzer die Möglichkeit sie für große Felder abzuschalten.
+
+\section{Implementierung}
+Das Programm ist in Python3 geschrieben und befindet sich in der Datei \textit{aufgabe2.py}. Für die Ausgabe ist das Python3-Package PyQt4 von Nöten. Zur Installation lässt sich unter Arch-Linux z.B. \textit{\$sudo pacman -S python-pyqt4} aufrufen. Zu Beginn wird der Ausführer nach der Eingabedatei gefragt. Diese muss im Format der vorgegebenen Beispieldateien vorliegen. Danach wird gefragt, ob die Quadratsortierung ausgeführt werden soll. Nach Angabe dieser beiden Parameter beginnt ein Timer und die \texttt{main1}-Methode wird mit den Parametern aufgerufen. Diese ruft \texttt{shearsort} und für das Originalfeld und das gespiegelte Feld die \texttt{main}-Methode auf und filtert aus den beiden Ergebnissen das kürzere heraus, was sie dann auch zurückgibt. Die Methode ist nur vom Skriptteil der Ausführung getrennt um Tests zu vereinfachen. 
+\subsection{Shearsort}
+Zusätzlich zu meinem eigenen Algorithmus habe ich, wie ich später erklären werde, in \texttt{shearsort} noch den Shearsort-Algorithmus implementiert. Die Implementierung ist sehr einfach direkt \cite{3} nachempfunden. Dazu werden $\lceil log_2(n)\rceil$-mal jeweils die Zeilen und Spalten Odd-Even-sortiert und danach nocheinmal die Zeilen sortiert. Für die Odd-Even-Sortierung wird jeweils zweimal \texttt{oddeven} aufgerufen, je einmal mit dem \texttt{start}-Parameter 0 und 1. Die Logs werden pro Durchgang in \texttt{newlog} für den Even- und \texttt{newlog1} für den Odd-Durchgang gespeichert. Dann werden nur die Logs nur übernommen, wenn sie wirklich eine Veränderung durchgeführt haben, also sie nicht leer sind. Dabei wird zuerst \texttt{newlog} übernommen, da für jede Zeile bzw. Spalte stets zuerst der Even-Durchgang ausgeführt wird. Wenn beide Logs leer sind, sind die Zeilen bzw. Spalten sortiert und der nächste Sortierschritt wird vorgenommen. 
+\subsection{\texttt{main}-Methode}
+In der \texttt{main}-Methode wird die Methode \texttt{lesen} aufgerufen. Diese ließt das Feld, gegebenenfalls gespiegelt, aus und speichert im Dictionary \texttt{feld} für jede Position als Wert das Ziel des Pakets, das dort zu Beginn ist. Nun wird das Dictionary \texttt{log} initialisiert, dass für jede Position eine Liste enthält, in der später die Tauschanweisungen eingetragen werden. Dann wird beim ersten Mal, also beim richtig orientierten Feld, das Feld einmal auf die Konsole ausgegeben. Dies funktioniert bei großen Feldern naturgemäß nicht so gut. Daraufhin wird solange das Feld unsortiert ist, also solange die Bewertung größer als $(0,n^2)$ ist, je ein Durchlauf von Höhensortierung, Odd- und Even-Durchgang auf eine Kopie von \texttt{feld} angewandt. Dazu werden die Methoden \texttt{hor} und \texttt{oddeven} aufgerufen, wobei \texttt{oddeven} je einmal 0 und 1 als \texttt{start} übergeben werden. Das beste Ergebnis ersetzt dann das alte \texttt{feld} und die entsprechenden Tauschanweisungen in den Log übernommen. Danach wird die Methode \texttt{square} aufgerufen, die die Quadratsortierung auf eine Kopie von \texttt{feld} ausübt. Falls das Ergebnis besser ist als das aktuelle Feld, wird das Feld ersetzt und der Log entsprechend geändert. Dabei wird ständig ein Fortschrittsbalken aktualisiert, der die aktuelle Bewertung im Vergleich zur ersten Bewertung anzeigt. Da die Bewertung zu Beginn stärker abnimmt als zu Ende ähnelt dieser Balken aber eher dem Windows Kopierdialog \cite{4}.
+\subsection{Odd-Even-Sort}
+Die Odd- und Even-Durchgänge werden in der Methode \texttt{oddeven} durchgeführt. Dabei gibt der Parameter \texttt{start} an, ob man bei der nullten oder der ersten Position beginnt und entscheidet somit, ob es ein Even- oder ein Odd-Durchgang ist. Das übergebene Dictionary \texttt{tosort} wird nach \texttt{ret} kopiert. In der Liste \texttt{keys} werden die nach ihrem Wert sortierten Schlüssel von \texttt{tosort} gespeichert. Deswegen kann man dann einfach diese Liste per for-Schleife durchgehen, je nach \texttt{start} beginnend bei 0 oder 1, und für jede Position der Wert des Pakets mit dem des Pakets des Nachfolgers verglichen. Falls der Wert beim Nachfolger kleiner ist, tauschen die beiden Positionen die Pakete, also ihre Werte in \texttt{ret}, aus und es wird in \texttt{ausg} ein entsprechender Vermerk für den Log eingefügt. Zum Schluss wird das Paar aus \texttt{ret} und \texttt{ausg} zurückgegeben. 
+\subsection{Spaltensortierung}
+Die Spaltensortierung findet in der Methode \texttt{hor} statt. Dabei werden alle Spalten durchgegangen und für jede je einmal \texttt{oddeven} mit dem \texttt{start}-Parameter 0 und 1 aufgerufen, was, wie schon erwähnt, einem Even- bzw. einem Odd-Durchgang entspricht. Das jeweils bessere Ergebnis wird \texttt{endfeld} hinzugefügt und der entsprechende Log an \texttt{ausg} angefügt. Zum Schluss wird dann das Paar aus \texttt{endfeld} und \texttt{ausg} zurückgegeben.
+
+\subsection{Quadratsortierung}
+Für die Quadratsortierung wird \texttt{square} sowohl das aktuelle Feld als auch der Log übergeben. Aus dem Log wird für jede Position der letzte Eintrag extrahiert, dieser muss keine Veränderung sein, sondern kann auch ein ``\_'' sein. Dann werden alle Positionen durchgegangen, die nicht am rechten oder unteren Rand liegen. Wenn man dann zu jeder Position das $2\times 2$-Quadrat nimmt, dass diese Position als linke, obere Ecke hat, findet man somit alle $2\times2$-Quadrate. In diesen wird geprüft, ob für jede der 4 Positionen die letzte Veränderung in diesem Quadrat liegt. Das ist der Fall, wenn die nordwestliche Ecke ihr letztes Paket in den Süden oder Osten abgegeben hat oder zuletzt ihr Paket behalten hatte, usw. für alle Ecken. Dann ist es der Quadratsortierung möglich, dieses Quadrat zu bearbeiten. Falls jedoch das Quadrat schon optimal sortiert ist, d.h. die Position mit dem kleinsten Wert hat bereits das Paket mit dem kleinsten Wert des Zielhauses etc., ist es sinnlos daran zu arbeiten, und es wird weitergegangen. Andernfalls werden daraufhin für alle Positionen die letzten Änderungen rückgängig gemacht, da nur so alle erlaubten Züge in diesem Quadrat gefunden werden können. Danach werden in \texttt{allsq} alle möglichen Züge für diese Position erzeugt. Das schließt die Veränderungen der Pakete und die Aufzählung der Positionsveränderungen mit ein. Um diese Züge zu erzeugen wurde im Vorhinein überlegt, dass es für das $2\times2$-Quadrat im äußersten Nordwesten genau 9 gültige Züge gibt:\\
+\begin{figure}[h]
+ \centering
+ \includegraphics[width = 5cm]{test.png}
+ \caption{Alle legalen Züge auf einem $2\times2$-Quadrat.}
+\end{figure}
+ 
+Dabei wird von dem sortierten Feld links oben ausgegangen. Jedes andere $2\times2$-Quadrat lässt sich durch Verschiebung auf diese Quadrat abbilden, daher lassen sich auch die Züge leicht abbilden. Daher werden in \texttt{allsq} die, in \texttt{twoxtwo} im Quellcode gespeicherten Züge für das nordwestliche Quadrat auf die aktuelle Position angepasst und so alle legalen Züge für das aktuelle Quadrat erzeugt. Danach wird die Bewertungsmethode \texttt{bewertefeld} auf alle Züge angewandt und der Zug mit der besten Bewertung übernommen. \footnote{Am 1. April habe ich einen Programmierfehler in dieser Methode gefunden. Seit der Ausbesserung bekomme ich für Amacity keine Sortierung mehr zustande die so gut ist wie mein bestes Ergebnis davor, das ich deshalb als \textit{sehrkurzerlog.txt} beilege.}
+
+\subsection{Ausgabe}
+\ 
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.3\textwidth}
+ \includegraphics[width=5cm]{start.png}
+ \caption{Die Animation zu Beginn}
+ \end{subfigure}
+ ~
+ \begin{subfigure}[b]{0.3\textwidth}
+  \includegraphics[width=5cm]{end.png}
+  \caption{Die Animation zu Ende}
+  \end{subfigure}
+\end{figure}
+
+Schlussendlich wird das Ergebnis im vorgegebenen Format abgespeichert und gefragt, ob der Ausführer das Ergebnis animiert haben will. Die Animation wird in \textit{animation.py} durchgeführt. Diese kann auch eigenständig aufgerufen werden. Dabei werden aus dem Log alle Bewegungen ausgelesen und vom Ausgangsfeld aus nachgespielt. Wegen begrenzten Bildschirmgrößen sind die Animationen vorallem bei kleineren Feldern sinnvoll. Während der Animation sind die Felder bezüglich der Manhatten-Distanz von ihrem Paket zu dessem Ziel von grün nach rot im Vergleich zur aktuell größten solchen Distanz farbmarkiert. Da jeweils die aktuell größte Distanz genommen wird, gibt es stets mindestens ein rotes Feld. 
+\section{Laufzeit und Korrektheit}
+Der Sortieralgorithmus terminiert auf jeden Fall. Dazu reicht es zu zeigen, dass bei jedem möglichen Feld mindestens einer der Teilalgorithmen die Bewertung erniedrigt. Da die Bewertung ein Minimum hat, wenn das Feld sortiert ist, muss dieses dann irgendwann erreicht werden. Weder Odd- noch Even-Durchgang erhöhen die Bewertung einer Lösung, dazu müsste sich nämlich ein Paket mit maximaler Distanz entgegen seiner gewünschten Bewegungsrichtung bewegen. Das ist aber nur der Fall wenn das Nachbarpaket in der ungewünschten Richtung in die gleiche Richtung will und einen Zielwert mit höherer Priorität hat, dann wäre aber auch die Distanz dieses Pakets größer, was nicht sein kann, da ja das ursprüngliche Paket maximale Distanz hat. Auch können keine zwei Pakete benachbart sein und in die gleiche Richtung wollen, wenn sich ihre Distanzen von den jeweiligen Zielen nur um 1 unterscheiden und das Paket mit der größeren Distanz weiter von seinem Ziel entfernt ist, da sie dann auf das gleiche Ziel wollen würden. Daher erniedrigt jeder Tausch, in den ein Paket mit maximaler Distanz involviert ist, die Bewertung. Es gibt auch stets so einen Tausch, da es entweder ein Paket mit maximaler Distanz gibt, dass in der Richtung, in die es will, ein Paket mit kleinerer Distanz und somit auch einem Zielwert mit niedrigerer Priorität hat, oder eine zusammenhängende Reihe von Paketen mit maximaler Distanz, sodass die Pakete an ihren Enden in unterschiedliche Richtungen wollen. Dann muss es zwischendurch einen Wechsel der gewünschten Richtung geben, was dazu führt, dass zwei Pakete mit maximaler Distanz einen für beide vorteilhaften Tausch durchführen. 
+
+Folglich nimmt die Bewertung stets ab. Leider lässt sich über die Bewertung wenig über die maximale Schrittzahl aussagen. Da es genau $n^2$ Pakete gibt und die Bewertung stets um mindestens 1 in der zweiten Stelle abnimmt, lässt sich sehr leicht zeigen, dass der Sortieralgorithmus maximal $n^4$ Schritte benötigt. Der Algorithmus ohne Quadratsortierung ist wohl nicht schlechter als der normale Shearsort Algorithmus, allerdings kann ich das nicht beweisen. So kann die lokale Optimierung, die in jedem Schritt das gerade beste Feld nimmt, unter Umständen kontraproduktiv sein. Allerdings zeigt sich bei zufälligen Feldern, dass die Sortierung sehr gut im Vergleich zum Shearsort-Algorithmus abschneidet und auch die Quadratsortierung einen durchschnittlichen Vorteil von $10\%$ gegenüber meinem Algorithmus ohne Quadratsortierung bringt. Sowohl die Sortierung mit als auch ohne Quadratsortierung scheinen folglich ein lineares Average-Case-Ergebnis an Schritten zu haben, was besser ist als der $\bigo(n\log(n))$ Verhalten von Shearsort ist. \\
+\begin{figure}[h]
+ \centering
+ \includegraphics[width = 8cm]{stepplot.png}
+ \caption{Die Schrittzahlen im Vergleich: Shearsort (rot), Sortieralgorithmus ohne (blau) und mit (grün) Quadratsortierung}
+\end{figure}
+
+Es gibt jedoch auch Felder, in denen der Algorithmus mit Quadratsortierung sowohl schlechter als der Algorithmus ohne Quadratsortierung als auch schlechter als der Shearsort-Algorithmus ist. Das Programm \textit{worst.py} erzeugt solche Felder, die dem sortierten Feld gespiegelt an der Südwest-Nordost Diagonalen entsprechen, mit beliebiger Größe. Allerdings ist bei diesen Feldern der Algorithmus ohne Quadratsortierung auch besser als Shearsort. Ich führe daher als ein Teilalgorithmus Shearsort durch um so ein garantiertes Worst-Case-Verhalten von $\bigo(n\log n)$ zu haben. Auch hat der Nutzer die Wahl ob er die Quadratsortierung benutzen will oder nicht. \\
+
+Dies waren Betrachtungen zur Schrittzahl der Ergebnisse. Die Laufzeit der Planerzeugung ist abhängig von der Schrittzahl der Pläne. Für jeden Schritt ist jedoch eine Laufzeit von $\bigo(n^2)$ erforderlich, da bei jedem der Teilalgorithmen alle Felder mehrfach abgegangen werden. Die Anzahl, wie oft ein Feld abgegangen wird hat eine konstante Obergrenze, da jedes Feld in den Algorithmen maximal 4 mal besucht wird (bei der Quadratsortierung) und zusätzlich nur ca noch 4 mal bei den Feldbewertungen besucht wird. Daher vermute ich eine Laufzeit der Planerzeugung zwischen $\bigo(n^3)$ und $\bigo(n^4)$. Bei Shearsort ist die Laufzeit $\bigo(n^3\log(n))$ da bei jedem Schritt bis zu $n^2$ Tausche vollführt werden, die alle nacheinander berechnet werden müssen. Jedoch ist Shearsort bei der Laufzeit den anderen Algorithmen stark überlegen, da bei diesen, durch die vielen Algorithmen, die jeweils durchgeführt werden, die Konstanten der höchsten Potenzen sehr groß werden. Deswegen ist auch der Sortieralgorithmus mit Quadratsortierung wesentlich langsamer als der ohne, obwohl sie wohl nominal die gleiche Laufzeit haben. Ein Test der durchschnittlichen Ausführzeiten, gemessen auf einem i3-5010U, ergibt:\\
+\begin{figure}[h]
+ \centering
+ \includegraphics[width=8cm]{timesplot.png}
+ \caption{Die durchschnittlichen Ausführzeiten, Farbcodierung wie oben}
+\end{figure}
+
+Dabei ist bei einer Feldgröße von 25 die Ausführzeit noch sehr gering. Bei allen größeren Feldern gibt es mehr als 640 Häuser und 640 Häuser sollten eigentlich genug für jeden sein. Zusätzlich wurden auf 5000 zufälligen Feldern der Größe $10\times10$ Tests der Sortierung mit oder ohne Quadratsortierung durchgeführt. Dabei zeigt sich, dass die Sortierung mit Quadratsortierung im Durchschnitt etwa eine $1.95$-mal solange Ausführzeit hat wie die ohne Quadratsortierung auf dem gleichen Feld. Dabei schwankten die Werte zwischen $1.01$ und $3.79$. Allerdings erzielte die Sortierung mit Quadratsortierung eine durchschnittliche Schrittzahl von $24.96$, was $3.78$ Schritte unter dem Durchschnitt von $28.74$ ohne Quadratsortierung liegt. Das entspricht einer Verbesserung von $13\%$. Jedoch ist die Sortierung mit Quadratsortierung unter Umständen bis zu 3 Schritte besser, dafür manchmal auch 13 Schritte schlechter. Auch zeigt es sich, dass es gut war, beide Orientierungen des Feldes zu sortieren, da beide Orientierungen etwa gleich oft das bessere Ergebnis liefern. Die untere Schranke der Schrittanzahl lag im Durchschnitt bei $15.39$ Schritten, weshalb ich mit meinem Ergebnis von $24.96$ Schritten sehr zufrieden bin. Am nächsten kam ein Sortierung bis auf 3 Schritte an die untere Schran
+\section{Beispiele}
+Da ein Beispiel der Größe $n$ eine Ausgabe mit $n^2$ Zeilen erzeugt, schreibe ich nur die Ausgabe von Amacity mit Quadratsortierung in die Dokumentation und lege die anderen Beispiele bei. Sie sind im Ordner ``Aufgabe2/Beispiele/'' und haben die Endung \textit{.out}.
+ \inputminted[breaklines]{bash}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe2/Abgabe/Aufgabe2/Beispiele/drohnen_eingabe_amacity.txt.out}
+
+
+\section{Quellen}
+\begin{thebibliography}{2}
+\bibitem{1}
+\url{https://en.wikipedia.org/wiki/Odd%E2%80%93even_sort}
+\bibitem{2}
+\url{https://en.wikipedia.org/wiki/Taxicab_geometry}
+\bibitem{3}
+\url{http://www.iti.fh-flensburg.de/lang/algorithmen/sortieren/twodim/shear/shearsorten.htm}
+\bibitem{4}
+\url{https://xkcd.com/612/}
+\end{thebibliography}
+
+
+\section{Quellcode}
+Die Abgabe enthält die Programmdateien \textit{aufgabe2.py}, \textit{animation.py}, \textit{gui.py}, \textit{fortschritt.py}, \textit{worst.py} und \textit{randfeld.py}. Dabei ist \textit{aufgabe2.py} das Hauptprogramm, das \textit{animation.py} und \textit{fortschritt.py} benötigt. In \textit{animation.py} wird die Animation aufgerufen und benötigt \textit{gui.py}. Die anderen beiden Dateien erzeugen zum Einen sehr schwere und zum Anderen zufällige Felder beliebiger Größe. interessant genug für die Dokumentation sind meines Erachtens nur die Dateien \textit{aufgabe2.py}, \textit{animation.py} und \textit{gui.py} interessant:\\
+
+\textit{\textbf{aufgabe2.py}}
+\inputminted[numbersep=5pt, tabsize=2, label=aufgabe1.py, breaklines, breaksymbolleft={}, linenos=true]{python3}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe2/Abgabe/Aufgabe2/aufgabe2.py}
+\textit{\textbf{animation.py}}
+\inputminted[numbersep=5pt, tabsize=2, label=aufgabe1.py, breaklines, breaksymbolleft={}, linenos=true]{python3}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe2/Abgabe/Aufgabe2/animation.py}
+\textit{\textbf{gui.py}}
+\inputminted[numbersep=5pt, tabsize=2, label=aufgabe1.py, breaklines, breaksymbolleft={}, linenos=true]{python3}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe2/Abgabe/Aufgabe2/gui.py}
+
+\end{document}
+
