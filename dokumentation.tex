@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{minted}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\rhead{\thepage}
+\chead{Teilnahme-ID: 4748}
+\lhead{Nicholas Schwab}
+\setlength{\headheight}{15.2pt}
+\cfoot{}
+\pagestyle{fancy}
+\renewcommand{\theFancyVerbLine}{  \sffamily\textcolor[rgb]{0.5,0.5,0.5}{\scriptsize\arabic{FancyVerbLine}}}
+
+
+\lstset{literate=
+  {ä}{{\"a}}1 {ö}{{\"o}}1 {ü}{{\"u}}1 {Ä}{{\"A}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1 {ß}{{\ss}}1, 
+  breaklines=true,
+breakatwhitespace=true,
+breakautoindent=true,
+}
+
+\title{BWINF 34 1. Runde}
+\author{Nicholas Schwab}
+
+\begin{document}
+\tableofcontents
+\newpage
+%\section{Aufgabe 3}
+\section{Vorhergehende Definitionen}
+Ein Schritt auf dem Spielfeld des Yamyams ist das Taumeln des Yamyams von einem Feld zu einem anderen, wo es aufgrund einer Wand anhalten muss. Ein Weg von einem Feld zu einem anderen ist eine Abfolge von Schritten, die bei dem einen Feld beginnt und bei dem anderen endet. Dabei hält der Yamyam auf jedem Feld höchstens einmal an. Würde er auf einem Feld mehrfach anhalten, so muss er einen Kreis von diesem Feld zu ihm selbst zurückgegangen sein. Diesen kann er auch einfach auslassen, da sich weder das Feld noch die Möglichkeiten des Weitertaumelns durch mehrere Besuche ändern. Im Folgenden wird angenommen, dass das Spiel endet, wenn der Yamyam einen Ausgang erreicht. Daher kann ein Weg nur einmal über einen Ausgang führen, und zwar dann, wenn er auf diesem Ausgang endet.
+\section{Lösungsidee}
+\subsection{Genereller Ansatz}
+Zuerst wird der Begriff der unsicheren Felder eingeführt. Die unsicheren Felder, sind die Felder, von denen es unmöglich ist zu einem Ausgang zu taumeln. Im ersten Beispiel der Aufgabenstellung sind dies u.a. die Felder links oben und links unten. Es ist offensichtlich, dass man von jedem der beiden Felder ausschließlich zu dem jeweils anderen gelangen kann, der Yamyam ist also auf diesen Feldern gefangen. Diese Felder sind per Definition keine sicheren Felder. \\
+
+Wenn es nun von einem anderen Feld einen Weg gibt, der zu einem unsicheren Feld führt, so ist dieses Feld auch nicht sicher. Da wir uns auf endlichen Spielfeldern befinden ist dieser Weg auch endlich, da ein Weg keine Periode enthalten kann. Daher ist die Wahrscheinlichkeit $P_1$ positiv von diesem Feld irgendwie auf ein unsicheres Feld zu kommen. Wenn aber dieses unsichere Feld erreicht ist, kann man nicht mehr zu einem Ausgang gelangen. Daher ist die Wahrscheinlichkeit von diesem Feld einen Ausgang zu erreichen höchstens $1-P_1$ und somit echt kleiner als 1, das Feld ist nicht sicher. \\
+
+Betrachten wir nun die restlichen Felder, also die, von denen man zu einem Ausgang, aber nicht zu einem unsicheren Feld gelangen kann. Wenn sich der Yamyam von diesem Feld beliebig fortbewegt, so gibt es von jedem Feld, auf dem es zwischenzeitlich anhält, einen Weg zu einem Ausgang, andernfalls wäre das Feld unsicher. Somit ist der Yamyam stets nur einen Weg endlicher Länge von einem Ausgang entfernt. Wenn man annimmt, dass der längste solche Weg zu einem Ausgang $n$ Schritte lang ist, dann ist der Yamyam stets maximal $n$ Schritte von einem Ausgang entfernt. Da er sich nur in die 4 Himmelsrichtungen fortbewegen kann, ist die Wahrscheinlichkeit diesen Weg zu gehen, also bei jedem Schritt in die richtige Richtung zu gehen mindestens $0.25^n$ (Im Normalfall ist sie größer, da der Yamyam an jedem Anstoßpunkt nur 3 mögliche Richtungen hat, aber das ist nicht relevant). Die Wahrscheinlichkeit von seinem aktuellen Feld aus einen Weg zu einem Ausgang zu gehen, ist für das Yamyam also stets mindestens $0.25^n$, da der Weg höchstens $n$ lang ist. Daher ist die Wahrscheinlichkeit $P_{\text{Ausgang}}(n)$ den Ausgang in höchstens $n$ Schritten zu finden mindestens $0.25^n$. Die Gegenwahrscheinlichkeit den Ausgang in den nächsten $n$ Schritten nicht zu finden ist also auch zu jedem Zeitpunkt höchstens $1-P_{\text{Ausgang}}(n)$. Da dieses Maximum der Wahrscheinlichkeit unabhängig von der Position des Yamyams ist, lässt sich auch annehmen, dass die Wahrscheinlichkeit den Ausgang in den nächsten $i\cdot n$ Schritten nicht zu finden, wiederum höchstens $(1-P_{\text{Ausgang}})^i$ ist. Daher ist die Wahrscheinlichkeit den Ausgang nie zu finden
+\begin{align*}
+ P_{\text{Ausgang unerreichbar} }= \lim_{i\to \infty} (1-P_{\text{Ausgang}}(n))^i = \lim_{i\to \infty} (1-0.25^n)^i = 0
+\end{align*}
+Daher ist von jedem Feld, das einen Weg zum Ausgang hat und keinen Weg zu einem unsicheren Feld besitzt, ein Ausgang mit der Wahrscheinlichkeit $1- P_{\text{Ausgang unerreichbar} }=1$ erreichbar, sie sind also sicher. Wie oben gezeigt sind es auch die einzigen sicheren Felder.\\
+
+Daher sucht der Lösungsalgorithmus erst nach allen unsicheren Feldern und dann nach allen Feldern, die zu einem unsicheren Feld führen und gibt die restlichen Felder als sicher aus.
+
+\subsection{Modellierung}
+Das Spielfeld und die Wege des Yamyams lassen sich durch einen gerichteten Graphen modellieren. Dabei gibt es für jedes Feld einen Knoten und zwischen zwei Knoten $\mathfrak{u}$ und $\mathfrak{v}$ gibt es genau dann einen Kante $\mathfrak{u}\to\mathfrak{v}$, wenn der Yamyam von dem von $\mathfrak{v}$ repräsentierten Feld in eine Richtung lostaumeln kann, sodass er auf dem von $\mathfrak{u}$ repräsentierten Feld zu halten kommt. Die Kanten in diesem Graphen sind also quasi umgekehrt zu der Bewegung des Yamyams. Daher gibt es zu jedem Knoten zwischen vier und keine eingehenden Kanten. Ein Spezialfall bilden hierbei die Ausgangsfelder, diesen werden keine eingehende Kanten zugeordnet, da das Spiel, wie oben definiert, endet, sobald der Yamyam auf einem Ausgang steht. Durch diesen Aufbau des Graphen lässt sich sehr einfach herausfinden von welchen Feldern man auf ein gegebenes Feld taumeln kann.
+\subsection{Algorithmen}
+\subsubsection{Aufbau der Adjazenzliste}
+Der Aufbau der Adjazenzliste findet während dem Einlesen des Spielfelds statt. Dazu wird das Spielfeld spalten- und zeilenweise untersucht. In jeder Spalte bzw. Zeile werden die zusammenhängende Stücke an betretbaren Feldern (freie Felder und Ausgänge) gesucht und jeweils alle freien Felder eines Stücks als von den Endpunkten des Stücks erreichbar gespeichert.
+\subsubsection{Breitensuche}
+Der Großteil der Arbeit wird durch zwei Breitensuchen verrichtet.\footnote{Ich frage mich immer noch, ob die Bezeichnung Breiten\textit{suche} nicht etwas übertrieben ist, wenn man nach nichts sucht.} Die erste ist eine Breitensuche von den Ausgängen aus. Sie markiert somit alle Knoten, die im Graphen von einem Ausgang aus erreichbar sind. Im Spiel sind das alle Felder, von denen ein Weg für den Yamyam zu einem Ausgang existiert. Die unmarkierten Felder sind demnach unsicher. Von diesen aus wird die zweite Breitensuche ausgeführt. Dadurch werden alle Knoten markiert, die von einem unsicheren Knoten aus erreichbar sind. Diese entsprechen genau den Feldern von denen ein Weg zu einem unsicheren Feld besteht. Folglich sind die sicheren Felder die Felder, die von der zweiten Breitensuche nicht markiert wurden. 
+
+\section{Implementierung}
+Das Programm ist in Python3 geschrieben und befindet sich in der Datei \textit{aufgabe3.py}. Für die Ausgabe ist das Python3-Package Pillow (Version $\geq 2.1.0$) von Nöten. Dieses ist ein Fork der Python Imaging Library. Zur Installation lässt sich z.B. \textit{\$ pip3 install pillow} aufrufen. Zu Beginn wird der Ausführer nach der Eingabedatei gefragt. Diese muss im Format der vorgegebenen Beispieldateien vorliegen. Nach Angabe der Eingabedatei wird die \texttt{main}-Methode aufgerufen, die zuerst das Einlesen der Eingabedatei aufruft. 
+
+\subsection{Aufbau der Adjazenzliste}
+Der Aufbau der Adjazenzliste findet in der Methode \texttt{einlesen} statt. Nach dem Auslesen des Spielfeldes aus der Datei in die zweidimensionale Liste \texttt{lines} wird es zeilenweise durchgegangen. Für jede Zeile wird die Methode \texttt{maxconnected} aufgerufen und so alle zusammenhängende Stücke dieser Zeile gefunden. In \texttt{maxconnected} wird dazu die eingegebene Liste durchgegangen und dabei die Positionen mit Ausnahme der Ausgänge seit der letzten Wand in der Liste \texttt{inarow} gesammelt und in der Adjazenzliste für die Position direkt nach der Wand gespeichert. Sobald die nächste Wand getroffen wird, werden die gesammelten Positionen auch in der Adjazenzliste der letzten Position vor der Wand gespeichert. So wird für jedes solches Stück eine Liste aller einzelnen Positionen dieses Stück abzüglich der Ausgänge als Werte der Randpositionen im globalen Dictionary \texttt{adjlist} gespeichert. Das Gleiche wird für alle Spalten ausgeführt. So ergibt sich der oben beschriebene Graph. Zusätzlich werden alle Positionen des Feldes mit ihren jeweiligen Zeichen in das globale Dictionary \texttt{feld} eingetragen.
+
+
+\subsection{Breitensuche}
+Nach dem Aufruf von \texttt{einlesen} werden die beiden Breitensuchen durchgeführt. Dabei wird bei der ersten Breitensuche für die Menge der Ausgänge die iterative Breitensuchemethode \texttt{broad} ausgeführt. Das ist quasi ein Breitensuche, die bei einem imaginären Knoten, der eine Kante zu allen Ausgängen besitzt, begonnen wird. Diese ist eine ganz normale (iterative) Breitensuche und benötigt als solche wohl kaum Erklärungen. Erwähnenswert ist, dass sie keine Abbruchbedingung besitzt, da ja nach nichts speziellem gesucht wird, sondern erst aufhört, wenn alle von den Ausgängen erreichbaren Knoten erschöpft sind und dann alle besuchten Knoten zurück gibt. Dann sind die unsicheren Knoten die Menge aller Knoten abzüglich den gerade markierten. Diese werden in \texttt{unsicher} hinterlegt. Danach wird von allen unsicheren Feldern eine Breitensuche, wieder mittels \texttt{broad} durchgeführt. Nach dieser zweiten Breitensuche sind in \texttt{besucht2} genau die Felder die nicht sicher sind. Somit lässt sich von hier mit der Ausgabe fortfahren.
+
+\subsection{Ausgabe}
+
+Die Ausgabe erfolgt in der Methode \texttt{schreiben}. Hier werden einfach alle Positionen abgegangen und untersucht, ob das entsprechende Feld eine Wand oder einen Ausgang beherbergt. Wenn das nicht der Fall ist, wird zwischen unsicheren Feldern, normalen nicht sicheren Feldern und sicheren Feldern unterschieden. Dabei sind die ersteren in der Menge \texttt{unsicher} gespeichert, die nicht sicheren sind die, die von der letzten Breitensuche nach \texttt{besucht2} zurückgegeben und \texttt{schreiben} übergeben wurden. Die restlichen Felder sind offensichtlich sicher. Das so erstellte Spielfeld wird als Text und als Bild ausgegeben. Dabei stehen im Textformat \textit{U} für ein unsicheres und \textit{S} für ein sicheres Feld. In der graphischen Ausgabe sind die unsicheren Felder rötlich, während die sicheren hellgrün sind. 
+\section{Laufzeit}
+Die Laufzeit des Programms ist linear abhängig von der Größe des Labyrinths. Für den Beweis wird auf die Laufzeiten einzelner Operationen aus \cite{1} zurückgegriffen. Wenn das Labyrinth die Größe $m\times n$ hat, hat das Programm folglich die Laufzeit $\mathcal O(m\cdot n)$. Das ergibt sich dadurch, dass jeder einzelne Teil, das Einlesen, die Breitensuche und die Ausgabe Linearzeit benötigt. Beim Einlesen bzw. Aufbau der Adjazenzliste wird $m$ bzw. $n$ mal die Methode \texttt{maxconnected} ausgeführt, jeweils mit einer Zeile der Länge $n$ bzw. $m$. Die Methode \texttt{maxconnected} wiederum ist linear in Abhängigkeit der Zeilenlänge. Sie besteht nämlich aus einer for-Schleife über diese Zeile, in der nur konstante Operationen durchgeführt werden. Ausgenommen ist die Erweiterung der Adjazenzliste des Endknotens (Z. 79). Diese hat lineare Laufzeit, allerdings kommt wird jede Position der Liste höchstens einmal darin benutzt, deswegen ist auch die Laufzeit über alle Iterationen linear. Die Breitensuchen haben naturgemäß eine Laufzeit von $\mathcal{O}(|E| +|V|)$ \cite{2}. Dabei hat der Graph maximal $4\cdot n\cdot m$ Kanten, da jede Position aus maximal 4 Richtungen erreichbar ist und somit jeder Knoten maximal 4 eingehende Kanten hat. Folglich ist $\mathcal{O}(|E|+|V|) = \mathcal{O}(4\cdot n\cdot m + n\cdot m) = \mathcal{O}(n\cdot m)$. In der Ausgabe wird jede Position abgegangen und, bis auf die Graphikausgabe, die hier vernachlässigt wird, ist jede Operation in konstanter Zeit zu bewältigen. Folglich hat auch die Ausgabe lineare Laufzeit. Demnach ist das ganze Programm als Aneinanderreihung linearer Algorithmen linear.
+
+\section{Erweiterungen}
+Als kleine Erweiterung werden zusätzlich zu den sicheren Feldern auch die unsicheren Felder angezeigt, also die Felder von denen es unmöglich ist, einen Ausgang zu erreichen. Mir kamen zusätzlich drei größere Erweiterungen für die Simulation in den Sinn.\\
+
+Zum einen lässt sich überlegen, dass es schade ist, dass der Yamyam einfach über Türen hinweg geht, wenn sie nicht an einer Wand sind. Würde der Yamyam hingegen durch die Türen durchfallen, wenn sie über die Türen laufen, (dies wäre der Fall, wenn die Türen z.B. Falltüren wären). Das lässt sich im Programm während der Erstellung der Adjazenzliste realisieren. Dazu wird in \texttt{maxconnected} immer, wenn ein Ausgang erreicht wird, dieser als Ende und Anfang eine zusammenhängenden Stückes behandelt. Also werden die aktuell in \texttt{inarow} gesammelten Positionen an die Adjazenzliste des Ausgangs übergeben, eine neue Liste angefangen und die bis zur nächsten Wand oder bis zum nächsten Ausgang gefundenen Positionen auch in die Adjazenzliste des Ausgangs gespeichert.\\
+
+Eine andere Idee für eine Erweiterung wäre, dass sich der Yamyam nur eine bestimmte Entfernung (gemessen in Schritten nicht in Feldern) von seinem Ursprung entfernen kann, dabei kann er insgesamt so viel in diesem Umkreis gehen, wie er will. Dann kann er nur Ausgänge in seiner Nähe erreichen, aber auch nur in unsichere Bereiche in seiner Nähe gelangen. D.h. es gibt so potentiell mehr sichere Positionen, da unter Umständen weit entfernte unsichere Positionen, in denen der Yamyam verloren gehen kann, ignoriert werden. Dies wird durch eine Ganzzahl \texttt{togo} realisiert, dies wird nach dem ersten Rand der Breitensuche in die Queue eingefügt. Danach wird jedes mal, wenn die Suche auf eine Zahl anstatt einer Position stößt diese Zahl um eins erniedrigt und wieder angehängt. Die Breitensuche stoppt wenn die Zahl 0 wird, dadurch entspricht ein negatives \texttt{togo} einer normalen Breitensuche ohne Einschränkung. Dadurch werden bei der iterativen Breitensuchen Tiefen realisiert. Somit ergeben sich maximale Bewegungsradien des Yamyams. \\
+
+Wenn der Yamyam sich nur eingeschränkt bewegen kann ergeben sich mehrere Typen von unsicheren Feldern. Es gibt die klassisch unsicheren Felder, von denen der Yamyam nicht mehr zu einem Ausgang gelangen kann, sobald er sich auf sie bewegt hat. Es gibt aber auch Felder, die als Startfelder zwar unsicher sind, aber auf denen der Yamyam sich zwischendurch auch befinden kann und sich später trotzdem zu einem Ausgang bewegen kann, da sein Bewegungsradius von seinem Startfeld gemessen wird. Diese Felder sind offensichtlich zwischen $\texttt{togo}$ und $2\cdot\texttt{togo}$ Schritte von den Ausgängen entfernt. Daher wird, um die unsicheren Felder zu finden, die erste Breitensuche mit einem Radius von $2\cdot\texttt{togo}$ durchgeführt, somit sind nur die wirklich unbetretbaren Felder in \texttt{unsicher} gespeichert. Nach der zweiten Breitensuche von den unsicheren Feldern aus, diese mit Radius \texttt{togo}, werden nun potentiell noch Felder als sicher bzw. nicht-unsicher angezeigt, von denen sich zwar kein klassisch unsicheres Feld aber auch kein Ausgang erreichen lässt, das ist der zweite Typ der unsicheren Felder. Da sie zwischen \texttt{togo} und $2\cdot\texttt{togo}$ von den Ausgängen entfernt befinden, lassen sie sich als der Unterschied zwischen den bei der ersten Breitensuche gefunden Feldern und den Feldern, die bei einer Breitensuche mit dem Radius \texttt{togo} gefunden werden, bestimmen. Sie werden in der Ausgabe orange bzw. mit \textit{W} für ein zu weit entferntes Feld gekennzeichnet. \\
+
+Zuletzt lässt sich überlegen, dass der Yamyam nicht komplett zufällig ist und, wenn er eine direkt erreichbare Tür sieht, auf diese zugeht. Er hat also quasi einen ``Riecher'' für Türen. Dies lässt sich realisieren, wenn der Breitensuche noch eine Menge an Stoppern übergeben wird, über die die Breitensuche nicht hinwegkann. Dazu wird die Menge an Positionen übergeben, von denen sich direkt ein Ausgang erreichen lässt, also alle Nachbarn der Ausgänge im Graphen. Dadurch wird unterbunden, dass der Yamyam sich von diesen Feldern aus auf unsichere Felder bewegt und nicht auf den Ausgang. Dass die Felder nicht unsicher sind, wird schon dadurch garantiert, dass sie bei der ersten Breitensuche als direkte Nachbarn zu Ausgängen gefunden werden.\\
+
+Alle drei Parameter, ob der Yamyam durch die Tür fallen soll, wie weit er sich bewegen darf und ob er Türen in der Nähe erkennt, werden zu Programmstart abgefragt. Dabei ist die maximale Entfernung, die der Yamyam zurücklegen kann, der Initialwert für \texttt{togo}. Wenn diesem der Wert $-1$ übergeben wird, ist es stets kleiner 0 und deswegen wird die Tiefensuche nie abgebrochen, was der normalen Fragestellung ohne maximale Entfernung entspricht. Besonders interessant bzw. gut für den Yamyam ist die Kombination daraus, dass er durch Türen fallen kann und Ausgänge riechen kann, dann werden sehr viele neue Felder sicher.
+
+
+\section{Beispiele}
+ Die auf der Website gegeben Beispiele ergeben folgende Outputs. Dabei ist die Ausführzeit kaum merklich.
+ \inputminted[breaklines]{bash}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe3/Abgabe/Aufgabe3/Beispiele/output}
+ Einige weitere interessante Beispiele für die Erweiterungen sehen folgendermaßen aus:
+ \inputminted[breaklines]{bash}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe3/Abgabe/Aufgabe3/Beispiele/interessant}
+Die erstellten graphischen Darstellungen der Ergebnisse (Bilder) und weitere Beispiele für die Erweiterungen befinden sich im Abgabeordner. Ein Einfügen der Bilder in die Dokumentation ist aufgrund der interessanten und stark unterschiedlichen Formate der Labyrinthe weniger sinnvoll.
+
+\section{Quellen}
+\begin{thebibliography}{9}
+
+\bibitem{1}
+\url{https://www.ics.uci.edu/~pattis/ICS-33/lectures/complexitypython.txt}
+\bibitem{2}
+\url{https://en.wikipedia.org/wiki/Breadth-first_search}
+
+\end{thebibliography}
+
+\section{Quellcode}
+In der Abgabe liegen zusätzlich zum Programm in \textit{aufgabe3.py} noch die Programme \textit{alle.py} und \textit{interessant.py}, die Beispielausgaben aus den vorliegenden Beispieldateien erstellen, bei.
+\inputminted[numbersep=5pt, tabsize=2, label=aufgabe1.py, breaklines, breaksymbolleft={}, linenos=true]{python3}{/home/nicholas/informatik/bwinf/Runde2/Aufgabe3/Abgabe/Aufgabe3/aufgabe3.py}
+
+\end{document}
+
